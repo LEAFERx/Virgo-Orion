@@ -7,6 +7,7 @@
 #include "VPD/vpd_verifier.h"
 
 #include "lib/orion/include/VPD/linearPC.h"
+#include "lib/orion/include/linear_code/expanders.h"
 
 using namespace std;
 void zk_verifier::get_prover(zk_prover *pp)
@@ -1209,46 +1210,76 @@ bool zk_verifier::verify(const char* output_path)
 	all_mask_sum = all_mask_sum + p->Zu * p->sumRc.eval(p->preu1);
 	
 	std::cerr << "GKR Prove Time " << p -> total_time << std::endl;
-	prime_field::field_element *all_sum;
-	all_sum = new prime_field::field_element[slice_number + 1];
-	auto merkle_root_l = (p -> poly_prover).commit_private_array(p -> circuit_value[0], C.circuit[0].bit_length, p -> all_pri_mask);
+	// prime_field::field_element *all_sum;
+	// all_sum = new prime_field::field_element[slice_number + 1];
+	// auto merkle_root_l = (p -> poly_prover).commit_private_array(p -> circuit_value[0], C.circuit[0].bit_length, p -> all_pri_mask);
 	
-	q_eval_real = new prime_field::field_element[1 << C.circuit[0].bit_length];
-	dfs_for_public_eval(0, prime_field::field_element(1), r_0, one_minus_r_0, C.circuit[0].bit_length, 0);
-	auto merkle_root_h = (p -> poly_prover).commit_public_array(all_pub_mask, q_eval_real, C.circuit[0].bit_length, alpha_beta_sum - p->Zu * p->sumRc.eval(p->preu1) + all_mask_sum, all_sum);
+	// q_eval_real = new prime_field::field_element[1 << C.circuit[0].bit_length];
+	// dfs_for_public_eval(0, prime_field::field_element(1), r_0, one_minus_r_0, C.circuit[0].bit_length, 0);
+	// auto merkle_root_h = (p -> poly_prover).commit_public_array(all_pub_mask, q_eval_real, C.circuit[0].bit_length, alpha_beta_sum - p->Zu * p->sumRc.eval(p->preu1) + all_mask_sum, all_sum);
 	
-	proof_size += 2 * sizeof(__hhash_digest);
-	VPD_randomness = r_0;
-	one_minus_VPD_randomness = one_minus_r_0;
-	poly_ver.p = &(p -> poly_prover);
+	// proof_size += 2 * sizeof(__hhash_digest);
+	// VPD_randomness = r_0;
+	// one_minus_VPD_randomness = one_minus_r_0;
+	// poly_ver.p = &(p -> poly_prover);
 	
-	prime_field::field_element *public_array = public_array_prepare(r_0, one_minus_r_0, C.circuit[0].bit_length, q_eval_real);
-	//prime_field::field_element *public_array = public_array_prepare_generic(q_eval_real, C.circuit[0].bit_length);
+	// prime_field::field_element *public_array = public_array_prepare(r_0, one_minus_r_0, C.circuit[0].bit_length, q_eval_real);
+	// //prime_field::field_element *public_array = public_array_prepare_generic(q_eval_real, C.circuit[0].bit_length);
 	
-	bool input_0_verify = poly_ver.verify_poly_commitment(all_sum, C.circuit[0].bit_length, public_array, all_pub_mask, verification_time, proof_size, p -> total_time, merkle_root_l, merkle_root_h);
+	// bool input_0_verify = poly_ver.verify_poly_commitment(all_sum, C.circuit[0].bit_length, public_array, all_pub_mask, verification_time, proof_size, p -> total_time, merkle_root_l, merkle_root_h);
+
+	
+    /// todo timer
+	auto expected_inner_product = alpha_beta_sum - p->Zu * p->sumRc.eval(p->preu1) + all_mask_sum;
+	const long long N = 1048576;
+	orion::expander_init(N / orion::column_size);
+
+	std::chrono::high_resolution_clock::time_point orion_commit_t0 = std::chrono::high_resolution_clock::now();
+	auto h = orion::commit(reinterpret_cast<orion::prime_field::field_element*>(p -> circuit_value[0]), N);
+	std::chrono::high_resolution_clock::time_point orion_commit_t1 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> orion_commit_span = std::chrono::duration_cast<std::chrono::duration<double>>(orion_commit_t1 - orion_commit_t0);
+	printf("Orion Commit Time: %d \n", orion_commit_span.count());
+	p -> total_time += orion_commit_span.count();
+
+	std::chrono::high_resolution_clock::time_point orion_verify_t0 = std::chrono::high_resolution_clock::now();
+	auto verificationResult = orion::open_and_verify(reinterpret_cast<orion::prime_field::field_element*>(q_eval_real), N, N, h);
+	if (verificationResult.second == false) {
+		std::cerr << "Verification fail, input vpd." << std::endl;
+		return false;
+	}
+	if (reinterpret_cast<orion::prime_field::field_element*>(&expected_inner_product)->operator!=(verificationResult.first)) {
+		std::cerr << "Verification fail, input vpd." << std::endl;
+		return false;
+	}
+	std::chrono::high_resolution_clock::time_point orion_verify_t1 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> orion_verify_span = std::chrono::duration_cast<std::chrono::duration<double>>(orion_verify_t1 - orion_verify_t0);
+	printf("Orion Verify Time: %d \n", orion_commit_span.count());
+	p -> total_time += orion_verify_span.count();
+
+
 	delete[] q_eval_real;
 	delete[] r_0;
 	delete[] r_1;
 	delete[] one_minus_r_0;
 	delete[] one_minus_r_1;
-	p -> total_time += (p -> poly_prover).total_time;
-	if(!(input_0_verify))
-	{
-		fprintf(stderr, "Verification fail, input vpd.\n");
-		return false;
-	}
-	else
-	{
+	// p -> total_time += (p -> poly_prover).total_time;
+	// if(!(input_0_verify))
+	// {
+	// 	fprintf(stderr, "Verification fail, input vpd.\n");
+	// 	return false;
+	// }
+	// else
+	// {
 		fprintf(stderr, "Verification pass\n");
 		std::cerr << "Prove Time " << p -> total_time << std::endl;
 		std::cerr << "Verification rdl time " << verification_rdl_time << std::endl;
 		//verification rdl time is the non-parallel part of the circuit. In all of our experiments and most applications, it can be calculated in O(log n) or O(log^2 n) time. We didn't implement the fast method due to the deadline.
 		std::cerr << "Verification Time " << verification_time - verification_rdl_time << std::endl;
 		std::cerr << "Proof size(bytes) " << proof_size << std::endl;
-		FILE *result = fopen(output_path, "w");
-		fprintf(result, "%lf %lf %lf %lf %d\n", p -> total_time, verification_time, predicates_calc_time, verification_rdl_time, proof_size);
-		fclose(result);
-	}
+		FILE *resultFile = fopen(output_path, "w");
+		fprintf(resultFile, "%lf %lf %lf %lf %d\n", p -> total_time, verification_time, predicates_calc_time, verification_rdl_time, proof_size);
+		fclose(resultFile);
+	// }
 	p -> delete_self();
 	delete_self();
 	return true;
