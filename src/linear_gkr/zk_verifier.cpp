@@ -6,6 +6,8 @@
 #include "linear_gkr/random_generator.h"
 #include "VPD/vpd_verifier.h"
 
+#include "lib/orion/include/VPD/linearPC.h"
+
 using namespace std;
 void zk_verifier::get_prover(zk_prover *pp)
 {

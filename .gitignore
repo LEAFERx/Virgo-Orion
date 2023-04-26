@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+build/
+cmake*
+CMakeCache.txt
+CMakeFiles/
+Makefile
+fft_gkr
+zk_proof
+
+tests/**/*.pws
