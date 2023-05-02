@@ -13,7 +13,7 @@ zk_prover p;
 
 int main(int argc, char** argv)
 {
-	//std::cout << "hello world" << std::endl;
+	std::cout << std::endl << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>> New Session <<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl << std::endl;
 	prime_field::init();
 
 	orion::prime_field::init();

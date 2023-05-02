@@ -85,27 +85,27 @@ public:
 	* generate mask polynomials of each layer and input layer
 	*/
 	///@{
-	void generate_maskR(int layer_id);
-	std::vector<prime_field::field_element> all_pri_mask;
-	prime_field::field_element *maskpoly; 
-	prime_field::field_element maskpoly_sumc;
-	prime_field::field_element maskpoly_sumr;
-	prime_field::field_element rho;
-	void generate_maskpoly_pre_rho(int, int);
-	void generate_maskpoly_after_rho(int, int);
-	prime_field::field_element maskR[6], preR[6];
+	// void generate_maskR(int layer_id);
+	// std::vector<prime_field::field_element> all_pri_mask;
+	// prime_field::field_element *maskpoly; 
+	// prime_field::field_element maskpoly_sumc;
+	// prime_field::field_element maskpoly_sumr;
+	// prime_field::field_element rho;
+	// void generate_maskpoly_pre_rho(int, int);
+	// void generate_maskpoly_after_rho(int, int);
+	// prime_field::field_element maskR[6], preR[6];
 
-	prime_field::field_element maskR_sumcu, maskR_sumcv, preZu, preZv, Zu, Zv, preu1, prev1, Iuv, prepreu1, preprev1;
-	quadratic_poly Rg1, Rg2, sumRc;
+	// prime_field::field_element maskR_sumcu, maskR_sumcv, preZu, preZv, Zu, Zv, preu1, prev1, Iuv, prepreu1, preprev1;
+	// quadratic_poly Rg1, Rg2, sumRc;
 	///@}
 
 	/** @name Query
 	* Answer the queries of V for mask polynomials
 	*/
 	///@{
-	prime_field::field_element query(prime_field::field_element*, prime_field::field_element*, prime_field::field_element);
-	prime_field::field_element queryRg1(prime_field::field_element);
-	prime_field::field_element queryRg2(prime_field::field_element);
+	// prime_field::field_element query(prime_field::field_element*, prime_field::field_element*, prime_field::field_element);
+	// prime_field::field_element queryRg1(prime_field::field_element);
+	// prime_field::field_element queryRg2(prime_field::field_element);
 
 	///@}
 

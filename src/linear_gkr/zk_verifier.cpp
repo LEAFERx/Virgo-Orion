@@ -823,18 +823,18 @@ prime_field::field_element zk_verifier::V_in(const prime_field::field_element* r
 void zk_verifier::self_inner_product_test(prime_field::field_element alpha_beta_sum, prime_field::field_element v_in)
 {
 	//msk
-	int v_mask_size = all_pub_mask.size();
-	int p_mask_size = p -> all_pri_mask.size();
-	std::cout << "get into function" << std::endl;
-	printf("%d\n", v_mask_size);
-	if(v_mask_size != p_mask_size){
-		printf("%s\n", "size is different.");
-	}
-	prime_field::field_element sum = prime_field::field_element(0);
-	for(int i = 0; i < v_mask_size; i++){
-		sum = sum + all_pub_mask[i] * p -> all_pri_mask[i];
-	}
-	assert(sum == all_mask_sum);
+	// int v_mask_size = all_pub_mask.size();
+	// int p_mask_size = p -> all_pri_mask.size();
+	// std::cout << "get into function" << std::endl;
+	// printf("%d\n", v_mask_size);
+	// if(v_mask_size != p_mask_size){
+	// 	printf("%s\n", "size is different.");
+	// }
+	// prime_field::field_element sum = prime_field::field_element(0);
+	// for(int i = 0; i < v_mask_size; i++){
+	// 	sum = sum + all_pub_mask[i] * p -> all_pri_mask[i];
+	// }
+	// assert(sum == all_mask_sum);
 	assert(v_in == alpha_beta_sum);
 }
 prime_field::field_element *q_eval_real;
@@ -913,7 +913,7 @@ prime_field::field_element* public_array_prepare(prime_field::field_element *r, 
 bool zk_verifier::verify(const char* output_path)
 {
 	//all_mask_sum = all_pub_mask * all_pri_mask;
-	all_mask_sum = prime_field::field_element(0);
+	// all_mask_sum = prime_field::field_element(0);
 	int proof_size = 0;
 	//there is a way to compress binlinear pairing element
 	double verification_time = 0;
@@ -955,15 +955,15 @@ bool zk_verifier::verify(const char* output_path)
 	for(int i = C.total_depth - 1; i >= 1; --i)
 	{
 		//std::cerr << "Bound u start" << std::endl;
-		auto rho = prime_field::random();
+		// auto rho = prime_field::random();
 
 		p -> sumcheck_init(i, C.circuit[i].bit_length, C.circuit[i - 1].bit_length, C.circuit[i - 1].bit_length, alpha, beta, r_0, r_1, one_minus_r_0, one_minus_r_1);
-		p -> generate_maskpoly_pre_rho(C.circuit[i - 1].bit_length * 2 + 1, 2);
-		p -> rho = rho;
-		p -> generate_maskpoly_after_rho(C.circuit[i - 1].bit_length * 2 + 1, 2);	
+		// p -> generate_maskpoly_pre_rho(C.circuit[i - 1].bit_length * 2 + 1, 2);
+		// p -> rho = rho;
+		// p -> generate_maskpoly_after_rho(C.circuit[i - 1].bit_length * 2 + 1, 2);	
 		//add maskpoly
 
-		alpha_beta_sum = (alpha_beta_sum + p->maskpoly_sumc);
+		// alpha_beta_sum = (alpha_beta_sum + p->maskpoly_sumc);
 
 		p -> sumcheck_phase1_init();
 		prime_field::field_element previous_random = prime_field::field_element(0);
@@ -978,19 +978,19 @@ bool zk_verifier::verify(const char* output_path)
 			r_c = prime_field::field_element(0);
 		}
 		//V should test the maskR for two points, V does random linear combination of these points first
-		auto random_combine = generate_randomness(1)[0];
+		// auto random_combine = generate_randomness(1)[0];
 
-		auto linear_coeff = generate_randomness(1)[0];
+		// auto linear_coeff = generate_randomness(1)[0];
 		//Add six public coeffs to the pub list all_pub_mask
 		//maskR(g, c) = a_0 + a_1g + a_2g^2 + a_3c + a_4c^2 + a_5gc, g = preu1 or prev1
-		all_pub_mask.push_back(prime_field::field_element(1) * random_combine + linear_coeff * prime_field::field_element(1) * random_combine);
-		auto preu1 = p -> prepreu1;
-		auto prev1 = p -> preprev1;
-		all_pub_mask.push_back(preu1  * random_combine + linear_coeff * prev1 * random_combine);
-		all_pub_mask.push_back(preu1 * preu1 * random_combine + linear_coeff * prev1 * prev1 * random_combine);
-		all_pub_mask.push_back(r_c * random_combine + linear_coeff * r_c * random_combine);
-		all_pub_mask.push_back(r_c * r_c * random_combine + linear_coeff * r_c * r_c * random_combine);
-		all_pub_mask.push_back(preu1 * r_c * random_combine + linear_coeff * prev1 * r_c * random_combine);
+		// all_pub_mask.push_back(prime_field::field_element(1) * random_combine + linear_coeff * prime_field::field_element(1) * random_combine);
+		// auto preu1 = p -> prepreu1;
+		// auto prev1 = p -> preprev1;
+		// all_pub_mask.push_back(preu1  * random_combine + linear_coeff * prev1 * random_combine);
+		// all_pub_mask.push_back(preu1 * preu1 * random_combine + linear_coeff * prev1 * prev1 * random_combine);
+		// all_pub_mask.push_back(r_c * random_combine + linear_coeff * r_c * random_combine);
+		// all_pub_mask.push_back(r_c * r_c * random_combine + linear_coeff * r_c * r_c * random_combine);
+		// all_pub_mask.push_back(preu1 * r_c * random_combine + linear_coeff * prev1 * r_c * random_combine);
 		//Add maskpoly's public coefficient to all_pub_mask
 		/*maskpoly = a_0u_0^2 + a_1u_0 + \cdots + a_{2n-2}u_{n-1}^2 + a_{2n-1}u_{n-1}  
 				   + a_{2n}v_0^2 + a_{2n + 1}v_0 + \cdots + a_{4n-2}v_{n-1}^2 + a_{4n-1}v_{n-1}
@@ -1002,30 +1002,30 @@ bool zk_verifier::verify(const char* output_path)
 		*/
 
 		//Every time all one test to V, V needs to do a linear combination for security.
-		auto linear_combine = generate_randomness(1)[0]; //mem leak
+		// auto linear_combine = generate_randomness(1)[0]; //mem leak
 		//a_0u_0^2 + a_1u_0 + \cdots + a_{2n-2}u_{n-1}^2 + a_{2n-1}u_{n-1}
-		int ll = C.circuit[i - 1].bit_length;
-		for(int k = 0; k < ll; k++){
-			all_pub_mask.push_back(linear_combine * r_u[k] * r_u[k] * rho);
-			all_pub_mask.push_back(linear_combine * r_u[k] * rho);
-		}
+		// int ll = C.circuit[i - 1].bit_length;
+		// for(int k = 0; k < ll; k++){
+		// 	all_pub_mask.push_back(linear_combine * r_u[k] * r_u[k] * rho);
+		// 	all_pub_mask.push_back(linear_combine * r_u[k] * rho);
+		// }
 		//a_{2n}v_0^2 + a_{2n + 1}v_0 + \cdots + a_{4n-2}v_{n-1}^2 + a_{4n-1}v_{n-1}
-		for(int k = 0; k < ll; k++){
-			all_pub_mask.push_back(linear_combine * r_v[k] * r_v[k] * rho);
-			all_pub_mask.push_back(linear_combine * r_v[k] * rho);
-		}
+		// for(int k = 0; k < ll; k++){
+		// 	all_pub_mask.push_back(linear_combine * r_v[k] * r_v[k] * rho);
+		// 	all_pub_mask.push_back(linear_combine * r_v[k] * rho);
+		// }
 		//a_{4n}c^2 + a_{4n+1}c + a_{4n + 2}(constant term)
-		all_pub_mask.push_back(linear_combine * r_c * r_c * rho);
-		all_pub_mask.push_back(linear_combine * r_c * rho);
-		all_pub_mask.push_back(linear_combine * prime_field::field_element(1) * rho);
+		// all_pub_mask.push_back(linear_combine * r_c * r_c * rho);
+		// all_pub_mask.push_back(linear_combine * r_c * rho);
+		// all_pub_mask.push_back(linear_combine * prime_field::field_element(1) * rho);
 		/*a_{m + 1} * u_{n-1}^5 + a_{m + 2} * u_{n-1}^4 + a_{m + 3} * u_{n-1}^3
 		+ a_{m + 4} * u_{n-1}^5 + a_{m + 5} * u_{n-1}^4 + a_{m + 6} * u_{n-1}^3*/
-		all_pub_mask.push_back(linear_combine * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * rho);
-		all_pub_mask.push_back(linear_combine * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * rho);
-		all_pub_mask.push_back(linear_combine * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * rho);
-		all_pub_mask.push_back(linear_combine * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * rho);
-		all_pub_mask.push_back(linear_combine * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * rho);
-		all_pub_mask.push_back(linear_combine * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * rho);
+		// all_pub_mask.push_back(linear_combine * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * rho);
+		// all_pub_mask.push_back(linear_combine * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * rho);
+		// all_pub_mask.push_back(linear_combine * r_u[ll-1] * r_u[ll-1] * r_u[ll-1] * rho);
+		// all_pub_mask.push_back(linear_combine * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * rho);
+		// all_pub_mask.push_back(linear_combine * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * rho);
+		// all_pub_mask.push_back(linear_combine * r_v[ll-1] * r_v[ll-1] * r_v[ll-1] * rho);
 
 		prime_field::field_element *one_minus_r_u, *one_minus_r_v;
 		one_minus_r_u = new prime_field::field_element[C.circuit[i - 1].bit_length];
@@ -1160,22 +1160,23 @@ bool zk_verifier::verify(const char* output_path)
 			r_c = prime_field::field_element(0);
 		alpha_beta_sum = poly.eval(r_c) + direct_relay_value * p -> v_u;
 
-		std::vector<prime_field::field_element> r;
-		for(int j = 0; j < C.circuit[i - 1].bit_length; ++j)
-			r.push_back(r_u[j]);
-		for(int j = 0; j < C.circuit[i - 1].bit_length; ++j)
-			r.push_back(r_v[j]);
-		r.push_back(r_c);
+		// std::vector<prime_field::field_element> r;
+		// for(int j = 0; j < C.circuit[i - 1].bit_length; ++j)
+		// 	r.push_back(r_u[j]);
+		// for(int j = 0; j < C.circuit[i - 1].bit_length; ++j)
+		// 	r.push_back(r_v[j]);
+		// r.push_back(r_c);
 		
-		prime_field::field_element maskpoly_value = p -> query(r_u, r_v, r_c);
-		prime_field::field_element maskRg1_value = p -> queryRg1(r_c);
-		prime_field::field_element maskRg2_value = p -> queryRg2(r_c);
+		// prime_field::field_element maskpoly_value = p -> query(r_u, r_v, r_c);
+		// prime_field::field_element maskRg1_value = p -> queryRg1(r_c);
+		// prime_field::field_element maskRg2_value = p -> queryRg2(r_c);
 		//here we do linear combination for all_mask_sum correspondingly.
 
 		//prime_field::field_element test_mask_sum = linear_combine * maskpoly_value;
-		all_mask_sum = all_mask_sum + maskRg1_value  * random_combine + linear_coeff * maskRg2_value * random_combine + linear_combine * maskpoly_value;
+		// all_mask_sum = all_mask_sum + maskRg1_value  * random_combine + linear_coeff * maskRg2_value * random_combine + linear_combine * maskpoly_value;
 	
-		if(alpha_beta_sum != r_c * (add_value * (v_u + v_v) + mult_value * v_u * v_v + not_value * (prime_field::field_element(1) - v_u) + minus_value * (v_u - v_v) + xor_value * (v_u + v_v - prime_field::field_element(2) * v_u * v_v) + naab_value * (v_v - v_u * v_v) + sum_value * v_u + relay_value * v_u + exp_sum_value * v_u + bit_test_value * (prime_field::field_element(1) - v_v) * v_u) + alpha * p -> Iuv * p ->preZu * maskRg1_value + beta * p -> Iuv * p -> preZv * maskRg2_value + maskpoly_value + direct_relay_value * v_u)
+		// if(alpha_beta_sum != r_c * (add_value * (v_u + v_v) + mult_value * v_u * v_v + not_value * (prime_field::field_element(1) - v_u) + minus_value * (v_u - v_v) + xor_value * (v_u + v_v - prime_field::field_element(2) * v_u * v_v) + naab_value * (v_v - v_u * v_v) + sum_value * v_u + relay_value * v_u + exp_sum_value * v_u + bit_test_value * (prime_field::field_element(1) - v_v) * v_u) + alpha * p -> Iuv * p ->preZu * maskRg1_value + beta * p -> Iuv * p -> preZv * maskRg2_value + maskpoly_value + direct_relay_value * v_u)
+		if(alpha_beta_sum != r_c * (add_value * (v_u + v_v) + mult_value * v_u * v_v + not_value * (prime_field::field_element(1) - v_u) + minus_value * (v_u - v_v) + xor_value * (v_u + v_v - prime_field::field_element(2) * v_u * v_v) + naab_value * (v_v - v_u * v_v) + sum_value * v_u + relay_value * v_u + exp_sum_value * v_u + bit_test_value * (prime_field::field_element(1) - v_v) * v_u) + direct_relay_value * v_u)
 		{
 			fprintf(stderr, "Verification fail, semi final, circuit level %d\n", i);
 			return false;
@@ -1203,11 +1204,11 @@ bool zk_verifier::verify(const char* output_path)
 	}
 
 	//post sumcheck
-	all_pub_mask.push_back(p->Zu);
-	all_pub_mask.push_back(p->Zu * p->preu1);
-	p->all_pri_mask.push_back(p->maskr[0]);
-	p->all_pri_mask.push_back(p->maskr[1]);
-	all_mask_sum = all_mask_sum + p->Zu * p->sumRc.eval(p->preu1);
+	// all_pub_mask.push_back(p->Zu);
+	// all_pub_mask.push_back(p->Zu * p->preu1);
+	// p->all_pri_mask.push_back(p->maskr[0]);
+	// p->all_pri_mask.push_back(p->maskr[1]);
+	// all_mask_sum = all_mask_sum + p->Zu * p->sumRc.eval(p->preu1);
 	
 	std::cerr << "GKR Prove Time " << p -> total_time << std::endl;
 	// prime_field::field_element *all_sum;
@@ -1230,31 +1231,59 @@ bool zk_verifier::verify(const char* output_path)
 
 	
     /// todo timer
-	auto expected_inner_product = alpha_beta_sum - p->Zu * p->sumRc.eval(p->preu1) + all_mask_sum;
-	const long long N = 1048576;
+	printf("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Orion <<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+	auto expected = V_in(r_0, one_minus_r_0, p -> circuit_value[0], C.circuit[0].bit_length, 1 << C.circuit[0].bit_length);
+	printf("expected: %lld, %lld \n", expected.real, expected.img);
+	printf("alpha_beta_sum: %lld, %lld \n", alpha_beta_sum.real, alpha_beta_sum.img);
+
+	const int bit_length = std::max(C.circuit[0].bit_length, 21);
+	const long long N = 1 << bit_length;
+	printf("N: %d \n", N);
+	printf("bit_length: %d \n", bit_length);
+
 	orion::expander_init(N / orion::column_size);
 
+	auto private_array = new orion::prime_field::field_element[N];
+	auto randomness = new orion::prime_field::field_element[bit_length];
+
+	for (int i = 0; i < (1 << C.circuit[0].bit_length); ++i) {
+		private_array[i] = *reinterpret_cast<orion::prime_field::field_element*>(&p -> circuit_value[0][i]);
+	}
+
+	for (int i = 0; i < C.circuit[0].bit_length; ++i) {
+		randomness[C.circuit[0].bit_length - 1 - i] = *reinterpret_cast<orion::prime_field::field_element*>(&r_0[i]);
+	}
+
+	// for (int i = C.circuit[0].bit_length; i < bit_length; ++i) {
+	// 	randomness[i] = orion::prime_field::field_element(0);
+	// }
+
+	
+
 	std::chrono::high_resolution_clock::time_point orion_commit_t0 = std::chrono::high_resolution_clock::now();
-	auto h = orion::commit(reinterpret_cast<orion::prime_field::field_element*>(p -> circuit_value[0]), N);
+	auto h = orion::commit(private_array, N);
 	std::chrono::high_resolution_clock::time_point orion_commit_t1 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> orion_commit_span = std::chrono::duration_cast<std::chrono::duration<double>>(orion_commit_t1 - orion_commit_t0);
-	printf("Orion Commit Time: %d \n", orion_commit_span.count());
+	printf("Orion Commit Time: %lf \n", orion_commit_span.count());
 	p -> total_time += orion_commit_span.count();
 
 	std::chrono::high_resolution_clock::time_point orion_verify_t0 = std::chrono::high_resolution_clock::now();
-	auto verificationResult = orion::open_and_verify(reinterpret_cast<orion::prime_field::field_element*>(q_eval_real), N, N, h);
+	auto verificationResult = orion::open_and_verify(randomness, bit_length, N, h);
 	if (verificationResult.second == false) {
 		std::cerr << "Verification fail, input vpd." << std::endl;
 		return false;
 	}
-	if (reinterpret_cast<orion::prime_field::field_element*>(&expected_inner_product)->operator!=(verificationResult.first)) {
-		std::cerr << "Verification fail, input vpd." << std::endl;
+	if (reinterpret_cast<orion::prime_field::field_element*>(&alpha_beta_sum)->operator!=(verificationResult.first)) {
+		printf("expected: %lld, %lld \n", alpha_beta_sum.real, alpha_beta_sum.img);
+		printf("actual: %lld, %lld \n", verificationResult.first.real, verificationResult.first.img);
+		std::cerr << "Verification fail, wrong sum." << std::endl;
 		return false;
 	}
 	std::chrono::high_resolution_clock::time_point orion_verify_t1 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> orion_verify_span = std::chrono::duration_cast<std::chrono::duration<double>>(orion_verify_t1 - orion_verify_t0);
-	printf("Orion Verify Time: %d \n", orion_commit_span.count());
+	printf("Orion Verify Time: %lf \n", orion_commit_span.count());
 	p -> total_time += orion_verify_span.count();
+	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> Orion >>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
 
 	delete[] q_eval_real;
@@ -1262,6 +1291,10 @@ bool zk_verifier::verify(const char* output_path)
 	delete[] r_1;
 	delete[] one_minus_r_0;
 	delete[] one_minus_r_1;
+
+	delete[] private_array;
+	delete[] randomness;
+
 	// p -> total_time += (p -> poly_prover).total_time;
 	// if(!(input_0_verify))
 	// {
