@@ -1233,8 +1233,8 @@ bool zk_verifier::verify(const char* output_path)
     /// todo timer
 	printf("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Orion <<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 	auto expected = V_in(r_0, one_minus_r_0, p -> circuit_value[0], C.circuit[0].bit_length, 1 << C.circuit[0].bit_length);
-	printf("expected: %lld, %lld \n", expected.real, expected.img);
-	printf("alpha_beta_sum: %lld, %lld \n", alpha_beta_sum.real, alpha_beta_sum.img);
+	// printf("expected: %lld, %lld \n", expected.real, expected.img);
+	// printf("alpha_beta_sum: %lld, %lld \n", alpha_beta_sum.real, alpha_beta_sum.img);
 
 	const int bit_length = std::max(C.circuit[0].bit_length, 21);
 	const long long N = 1 << bit_length;
@@ -1274,8 +1274,8 @@ bool zk_verifier::verify(const char* output_path)
 		return false;
 	}
 	if (reinterpret_cast<orion::prime_field::field_element*>(&alpha_beta_sum)->operator!=(verificationResult.first)) {
-		printf("expected: %lld, %lld \n", alpha_beta_sum.real, alpha_beta_sum.img);
-		printf("actual: %lld, %lld \n", verificationResult.first.real, verificationResult.first.img);
+		// printf("expected: %lld, %lld \n", alpha_beta_sum.real, alpha_beta_sum.img);
+		// printf("actual: %lld, %lld \n", verificationResult.first.real, verificationResult.first.img);
 		std::cerr << "Verification fail, wrong sum." << std::endl;
 		return false;
 	}

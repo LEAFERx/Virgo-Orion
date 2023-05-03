@@ -37,9 +37,10 @@ __hhash_digest* commit(const prime_field::field_element *src, long long N)
     for(int i = 0; i < N / column_size * 2; ++i)
     {
         memset(&stash[i], 0, sizeof(__hhash_digest));
-        for(int j = 0; j < column_size / 2; ++j)
+        for(int j = 0; j < column_size; ++j)
         {
-            stash[i] = merkle_tree::hash_double_field_element_merkle_damgard(encoded_codeword[2 * j][i], encoded_codeword[2 * j + 1][i], stash[i]);
+            // stash[i] = merkle_tree::hash_double_field_element_merkle_damgard(encoded_codeword[2 * j][i], encoded_codeword[2 * j + 1][i], stash[i]);
+            stash[i] = merkle_tree::hash_single_field_element(encoded_codeword[j][i], stash[i]);
         }
     }
 
@@ -276,9 +277,9 @@ void generate_circuit(long long* query, long long N, int query_count, prime_fiel
     for(int i = 0; i < N / column_size * 2; ++i)
     {
         if(i < codeword_size[0])
-            combined_codeword_hash[i] = merkle_tree::hash_single_field_element(combined_codeword[i]);
+            combined_codeword_hash[i] = merkle_tree::hash_single_field_element_zero(combined_codeword[i]);
         else
-            combined_codeword_hash[i] = merkle_tree::hash_single_field_element(zero);
+            combined_codeword_hash[i] = merkle_tree::hash_single_field_element_zero(zero);
     }
 
     //merkle commit to combined_codeword
@@ -322,13 +323,14 @@ void generate_circuit(long long* query, long long N, int query_count, prime_fiel
         __hhash_digest column_hash;
         memset(&column_hash, 0, sizeof(__hhash_digest));
 
-        for(int j = 0; j < column_size / 2; ++j)
+        for(int j = 0; j < column_size; ++j)
         {
-            column_hash = merkle_tree::hash_double_field_element_merkle_damgard(encoded_codeword[2 * j][q], encoded_codeword[2 * j + 1][q], column_hash);
+            // column_hash = merkle_tree::hash_double_field_element_merkle_damgard(encoded_codeword[2 * j][q], encoded_codeword[2 * j + 1][q], column_hash);
+            column_hash = merkle_tree::hash_single_field_element(encoded_codeword[j][q], column_hash);
         }
 
         assert(merkle_tree::merkle_tree_verifier::verify_claim(com_mt[1], com_mt, column_hash, q, N / column_size * 2, visited_com, proof_size));
-        assert(merkle_tree::merkle_tree_verifier::verify_claim(combined_codeword_mt[1], combined_codeword_mt, merkle_tree::hash_single_field_element(combined_codeword[q]), q, N / column_size * 2, visited_combined_com, proof_size));
+        assert(merkle_tree::merkle_tree_verifier::verify_claim(combined_codeword_mt[1], combined_codeword_mt, merkle_tree::hash_single_field_element_zero(combined_codeword[q]), q, N / column_size * 2, visited_combined_com, proof_size));
 
         assert(sum == combined_codeword[q]);
         //add merkle tree open

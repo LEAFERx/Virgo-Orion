@@ -6,7 +6,7 @@ using namespace orion;
 
 int main()
 {
-    prime_field::init();
+    prime_field::init("21888242871839275222246405745257275088548364400416034343698204186575808495617", 10);
     int lgN = 20;
     int N = 1 << lgN;
     int lgRate = 5;

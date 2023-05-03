@@ -40,5 +40,7 @@ Makefile
 zk_proof
 gen
 linear_code
+!src/*
+!include/*
 linearPC
 linearPC_multi

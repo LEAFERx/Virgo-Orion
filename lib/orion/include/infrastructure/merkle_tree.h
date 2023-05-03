@@ -15,9 +15,9 @@ namespace merkle_tree
 {
 extern int size_after_padding;
 
-__hhash_digest hash_single_field_element(prime_field::field_element x);
+__hhash_digest hash_single_field_element_zero(prime_field::field_element x);
 
-__hhash_digest hash_double_field_element_merkle_damgard(prime_field::field_element x, prime_field::field_element y, __hhash_digest prev_hash);
+__hhash_digest hash_single_field_element(prime_field::field_element x, __hhash_digest prev_hash);
 
 namespace merkle_tree_prover
 {

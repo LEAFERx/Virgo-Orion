@@ -5,25 +5,23 @@ namespace orion {
 
 int merkle_tree::size_after_padding;
 
-__hhash_digest merkle_tree::hash_single_field_element(prime_field::field_element x)
+__hhash_digest merkle_tree::hash_single_field_element_zero(prime_field::field_element x)
 {
     __hhash_digest data[2], ret;
     memset(data, 0, sizeof(data));
     memcpy(&data[0].h0, &x, sizeof(data[0].h0));
-    assert(sizeof(data[0].h0) == sizeof(x));
+    // assert(sizeof(data[0].h0) == sizeof(x));
     my_hhash(data, &ret);
     return ret;
 }
 
-__hhash_digest merkle_tree::hash_double_field_element_merkle_damgard(prime_field::field_element x, prime_field::field_element y, __hhash_digest prev_hash)
+__hhash_digest merkle_tree::hash_single_field_element(prime_field::field_element x, __hhash_digest prev_hash)
 {
-   __hhash_digest data[2], ret;
+    __hhash_digest data[2], ret;
+    memset(data, 0, sizeof(data));
     data[0] = prev_hash;
-    prime_field::field_element element[2];
-    element[0] = x;
-    element[1] = y;
-    memcpy(&data[1], element, 2 * sizeof(prime_field::field_element));
-    assert(2 * sizeof(prime_field::field_element) == sizeof(__hhash_digest));
+    memcpy(&data[0].h0, &x, sizeof(data[0].h0));
+    // assert(sizeof(data[0].h0) == sizeof(x));
     my_hhash(data, &ret);
     return ret;
 }

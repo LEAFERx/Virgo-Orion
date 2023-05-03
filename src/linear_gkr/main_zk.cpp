@@ -14,9 +14,9 @@ zk_prover p;
 int main(int argc, char** argv)
 {
 	std::cout << std::endl << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>> New Session <<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl << std::endl;
-	prime_field::init();
+	prime_field::init("21888242871839275222246405745257275088548364400416034343698204186575808495617", 10);
 
-	orion::prime_field::init();
+	orion::prime_field::init("21888242871839275222246405745257275088548364400416034343698204186575808495617", 10);
 
 	p.total_time = 0;
 	v.get_prover(&p);

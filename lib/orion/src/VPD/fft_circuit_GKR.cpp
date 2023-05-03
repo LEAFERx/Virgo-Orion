@@ -39,7 +39,8 @@ void build_circuit(int lg_size, prime_field::field_element *r)
     //ifft
     rou = prime_field::get_root_of_unity(lg_size);
     inv_rou = prime_field::inv(rou);
-    inv_n = fast_pow(prime_field::field_element((1 << lg_size)), prime_field::mod - 2);
+    prime_field::u256b two(2ull);
+    inv_n = fast_pow(prime_field::field_element((1 << lg_size)), prime_field::mod - two);
     prime_field::field_element *x_arr = new prime_field::field_element[1 << lg_size];
     prime_field::field_element *rot_mul = new prime_field::field_element[62];
     rot_mul[0] = inv_rou;
@@ -829,7 +830,7 @@ int engage_gkr(int lg_size)
 int main(int argc, char *argv[])
 {
     int lg_size;
-    prime_field::init();
+    prime_field::init("21888242871839275222246405745257275088548364400416034343698204186575808495617", 10);
     prime_field::init_random();
     sscanf(argv[1], "%d", &lg_size);
     init_array(lg_size + 6);
