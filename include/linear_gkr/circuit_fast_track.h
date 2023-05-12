@@ -10,10 +10,27 @@ class gate
 public:
 	int ty;
 	long long u, v;
+
+	// For weight summation gate (ty=15) only
+	long long k; // number of gates to be summed
+	std::vector<long long> wsum_gatenums;
+	std::vector<prime_field::field_element> wsum_coeff;
+
 	gate(){}
 	gate(int t, long long U, long long V)
 	{
 		ty = t, u = U, v = V;
+	}
+	gate(int t, long long K, std::vector<long long> _wsum_gatenums, std::vector<prime_field::field_element> _wsum_coeff)
+	{
+		assert(ty == 15);
+		assert(_wsum_gatenums.size() == k);
+		assert(_wsum_coeff.size() == k);
+		ty = t;
+		u = v = 0;
+		k = K;
+		wsum_gatenums = _wsum_gatenums;
+		wsum_coeff = _wsum_coeff;
 	}
 };
 
