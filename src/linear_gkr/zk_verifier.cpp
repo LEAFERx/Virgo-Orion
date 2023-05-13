@@ -185,6 +185,7 @@ void zk_verifier::read_circuit(const char *path, const char *meta_path)
 		if(is_para)
 		{
 			C.circuit[i].is_parallel = true;
+			fprintf(stderr, "layer %d, bit_length %d， repeat_time %d \n", i, C.circuit[i].bit_length, C.circuit[i].repeat_num);
 		}
 		else
 		{
@@ -1236,7 +1237,7 @@ bool zk_verifier::verify(const char* output_path)
 	// printf("expected: %lld, %lld \n", expected.real, expected.img);
 	// printf("alpha_beta_sum: %lld, %lld \n", alpha_beta_sum.real, alpha_beta_sum.img);
 
-	const int bit_length = std::max(C.circuit[0].bit_length, 21);
+	const int bit_length = C.circuit[0].bit_length; // std::max(C.circuit[0].bit_length, 21);
 	const long long N = 1 << bit_length;
 	printf("N: %d \n", N);
 	printf("bit_length: %d \n", bit_length);
@@ -1249,6 +1250,10 @@ bool zk_verifier::verify(const char* output_path)
 	for (int i = 0; i < (1 << C.circuit[0].bit_length); ++i) {
 		private_array[i] = *reinterpret_cast<orion::prime_field::field_element*>(&p -> circuit_value[0][i]);
 	}
+
+	// for (int i = (1 << C.circuit[0].bit_length); i < N; ++i) {
+	// 	private_array[i] = orion::prime_field::field_element(0);
+	// }
 
 	for (int i = 0; i < C.circuit[0].bit_length; ++i) {
 		randomness[C.circuit[0].bit_length - 1 - i] = *reinterpret_cast<orion::prime_field::field_element*>(&r_0[i]);
@@ -1264,6 +1269,7 @@ bool zk_verifier::verify(const char* output_path)
 	auto h = orion::commit(private_array, N);
 	std::chrono::high_resolution_clock::time_point orion_commit_t1 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> orion_commit_span = std::chrono::duration_cast<std::chrono::duration<double>>(orion_commit_t1 - orion_commit_t0);
+	printf("Orion Commit N: %lld \n", N);
 	printf("Orion Commit Time: %lf \n", orion_commit_span.count());
 	p -> total_time += orion_commit_span.count();
 
