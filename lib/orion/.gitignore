@@ -44,3 +44,4 @@ linear_code
 !include/*
 linearPC
 linearPC_multi
+!CMakeLists.txt
