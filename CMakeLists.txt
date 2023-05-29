@@ -7,7 +7,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -lstdc++ -Wall -march=native -faligned-new -O3")
 
 include_directories(lib)
-link_directories(lib/orion/lib)
+link_directories(lib lib/orion/lib)
 add_subdirectory(lib/orion)
 
 add_executable(fft_gkr src/VPD/fft_circuit_GKR.cpp src/linear_gkr/prime_field.cpp src/linear_gkr/polynomial.cpp)
