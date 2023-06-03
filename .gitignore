@@ -38,5 +38,10 @@ CMakeFiles/
 Makefile
 fft_gkr
 zk_proof
+linear_code
+linearPC
+linearPC_multi
+
+!/src/orion/linear_code
 
 tests/**/*.pws
