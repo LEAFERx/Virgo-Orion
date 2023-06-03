@@ -14,26 +14,26 @@ public:
 	int ty;
 	long long u, v;
 
-	// For weight summation gate (ty=15) only
-	long long k; // number of gates to be summed
-	std::vector<long long> wsum_gatenums;
-	std::vector<common::prime_field::field_element> wsum_coeff;
+	// For weight summation gate (ty=14) only
+	long long wsum_k; // number of gates to be summed
+	std::vector<long long> wsum_gates;
+	std::vector<common::prime_field::field_element> wsum_weights;
 
 	gate(){}
 	gate(int t, long long U, long long V)
 	{
 		ty = t, u = U, v = V;
 	}
-	gate(int t, long long K, std::vector<long long> _wsum_gatenums, std::vector<common::prime_field::field_element> _wsum_coeff)
+	gate(int t, long long K, std::vector<long long> _wsum_gates, std::vector<common::prime_field::field_element> _wsum_weights)
 	{
 		assert(ty == 15);
-		assert(_wsum_gatenums.size() == k);
-		assert(_wsum_coeff.size() == k);
+		assert(_wsum_gates.size() == wsum_k);
+		assert(_wsum_weights.size() == wsum_k);
 		ty = t;
 		u = v = 0;
-		k = K;
-		wsum_gatenums = _wsum_gatenums;
-		wsum_coeff = _wsum_coeff;
+		wsum_k = K;
+		wsum_gates = _wsum_gates;
+		wsum_weights = _wsum_weights;
 	}
 };
 

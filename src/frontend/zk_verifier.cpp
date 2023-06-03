@@ -226,7 +226,7 @@ vector<prime_field::field_element> zk_verifier::predicates(int depth, prime_fiel
 {
 	std::vector<prime_field::field_element> ret_para;
 	std::vector<prime_field::field_element> ret;
-	const int gate_type_count = 14;
+	const int gate_type_count = 15;
 	ret.resize(gate_type_count);
 	ret_para.resize(gate_type_count);
 	for(int i = 0; i < gate_type_count; ++i)
@@ -539,6 +539,23 @@ vector<prime_field::field_element> zk_verifier::predicates(int depth, prime_fiel
 						int u_second_half = j >> first_half_uv;
 						ret[12] = ret[12] + beta_g_val * beta_v_0 * (beta_u_first_half[u_first_half] * beta_u_second_half[u_second_half]);
 						beta_v_0 = beta_v_0 + beta_v_0;
+					}
+					break;
+				}
+				case 14:
+				{
+					int g_first_half = g & ((1 << first_half_g) - 1);
+					int g_second_half = (g >> first_half_g);
+					
+					auto beta_g_val = beta_g_r0_first_half[g_first_half] * beta_g_r0_second_half[g_second_half] + beta_g_r1_first_half[g_first_half] * beta_g_r1_second_half[g_second_half];
+					auto beta_v_0 = beta_v_first_half[0] * beta_v_second_half[0];
+					for(int j = 0; j < C.circuit[depth].gates[i].wsum_k; ++j)
+					{
+						long long src = C.circuit[depth].gates[i].wsum_gates[j];
+						int u_first_half = src & ((1 << first_half_uv) - 1);
+						int u_second_half = src >> first_half_uv;
+						prime_field::field_element weight = C.circuit[depth].gates[i].wsum_weights[j];
+						ret[14] = ret[14] + beta_g_val * beta_v_0 * (beta_u_first_half[u_first_half] * beta_u_second_half[u_second_half]) * weight;
 					}
 					break;
 				}
@@ -1115,6 +1132,7 @@ bool zk_verifier::verify(const char* output_path)
 		auto relay_value = predicates_value[10];
 		auto exp_sum_value = predicates_value[12];
 		auto bit_test_value = predicates_value[13];
+		auto custom_comb_value = predicates_value[14];
 		quadratic_poly poly = p->sumcheck_finalround(previous_random, C.circuit[i - 1].bit_length << 1, add_value * (v_u + v_v) + mult_value * v_u * v_v + not_value * (prime_field::field_element(1) - v_u) + minus_value * (v_u - v_v) + xor_value * (v_u + v_v - prime_field::field_element(2) * v_u * v_v) + naab_value * (v_v - v_u * v_v) + sum_value * v_u + relay_value * v_u + exp_sum_value * v_u + bit_test_value * (v_u * (prime_field::field_element(1) - v_v)));
 
 		if(poly.eval(0) + poly.eval(1) + direct_relay_value * v_u != alpha_beta_sum)
@@ -1142,13 +1160,26 @@ bool zk_verifier::verify(const char* output_path)
 		// all_mask_sum = all_mask_sum + maskRg1_value  * random_combine + linear_coeff * maskRg2_value * random_combine + linear_combine * maskpoly_value;
 	
 		// if(alpha_beta_sum != r_c * (add_value * (v_u + v_v) + mult_value * v_u * v_v + not_value * (prime_field::field_element(1) - v_u) + minus_value * (v_u - v_v) + xor_value * (v_u + v_v - prime_field::field_element(2) * v_u * v_v) + naab_value * (v_v - v_u * v_v) + sum_value * v_u + relay_value * v_u + exp_sum_value * v_u + bit_test_value * (prime_field::field_element(1) - v_v) * v_u) + alpha * p -> Iuv * p ->preZu * maskRg1_value + beta * p -> Iuv * p -> preZv * maskRg2_value + maskpoly_value + direct_relay_value * v_u)
-		if(alpha_beta_sum != r_c * (add_value * (v_u + v_v) + mult_value * v_u * v_v + not_value * (prime_field::field_element(1) - v_u) + minus_value * (v_u - v_v) + xor_value * (v_u + v_v - prime_field::field_element(2) * v_u * v_v) + naab_value * (v_v - v_u * v_v) + sum_value * v_u + relay_value * v_u + exp_sum_value * v_u + bit_test_value * (prime_field::field_element(1) - v_v) * v_u) + direct_relay_value * v_u)
+		
+		
+		prime_field::field_element expected_sum = add_value * (v_u + v_v);
+		expected_sum = expected_sum + mult_value * v_u * v_v;
+		expected_sum = expected_sum + not_value * (prime_field::field_element(1) - v_u);
+		expected_sum = expected_sum + minus_value * (v_u - v_v);
+		expected_sum = expected_sum + xor_value * (v_u + v_v - prime_field::field_element(2) * v_u * v_v);
+		expected_sum = expected_sum + naab_value * (v_v - v_u * v_v);
+		expected_sum = expected_sum + sum_value * v_u;
+		expected_sum = expected_sum + custom_comb_value * v_u;
+		expected_sum = expected_sum + relay_value * v_u;
+		expected_sum = expected_sum + exp_sum_value * v_u;
+		expected_sum = expected_sum + bit_test_value * (prime_field::field_element(1) - v_v) * v_u;
+		expected_sum = expected_sum * r_c;
+		expected_sum = expected_sum + direct_relay_value * v_u;
+
+		if(alpha_beta_sum != expected_sum)
 		{
 			fprintf(stderr, "Verification fail, semi final, circuit level %d\n", i);
 			return false;
-		}
-		else
-		{
 		}
 		auto tmp_alpha = generate_randomness(1), tmp_beta = generate_randomness(1);
 		alpha = tmp_alpha[0];

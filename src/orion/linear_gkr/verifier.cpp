@@ -1176,8 +1176,20 @@ bool zk_verifier::verify(const char* output_path)
 		for(int j = 0; j < C.circuit[i - 1].bit_length; ++j)
 			r.push_back(r_v[j]);
 		
-	
-		if(alpha_beta_sum != (add_value * (v_u + v_v) + mult_value * v_u * v_v + not_value * (prime_field::field_element(1) - v_u) + minus_value * (v_u - v_v) + xor_value * (v_u + v_v - prime_field::field_element(2) * v_u * v_v) + naab_value * (v_v - v_u * v_v) + sum_value * v_u + custom_comb_value * v_u + relay_value * v_u + exp_sum_value * v_u + bit_test_value * (prime_field::field_element(1) - v_v) * v_u) + direct_relay_value * v_u)
+		prime_field::field_element expected_sum = add_value * (v_u + v_v);
+		expected_sum = expected_sum + mult_value * v_u * v_v;
+		expected_sum = expected_sum + not_value * (prime_field::field_element(1) - v_u);
+		expected_sum = expected_sum + minus_value * (v_u - v_v);
+		expected_sum = expected_sum + xor_value * (v_u + v_v - prime_field::field_element(2) * v_u * v_v);
+		expected_sum = expected_sum + naab_value * (v_v - v_u * v_v);
+		expected_sum = expected_sum + sum_value * v_u;
+		expected_sum = expected_sum + custom_comb_value * v_u;
+		expected_sum = expected_sum + relay_value * v_u;
+		expected_sum = expected_sum + exp_sum_value * v_u;
+		expected_sum = expected_sum + bit_test_value * (prime_field::field_element(1) - v_v) * v_u;
+		expected_sum = expected_sum + direct_relay_value * v_u;
+
+		if(alpha_beta_sum != expected_sum)
 		{
 			fprintf(stderr, "Verification fail, semi final, circuit level %d\n", i);
 			return false;
