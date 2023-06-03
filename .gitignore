@@ -38,6 +38,7 @@ linear_code
 linearPC
 linearPC_multi
 
-!/src/orion/linear_code
+!include/**/*
+!src/**/*
 
 tests/**/*.pws
