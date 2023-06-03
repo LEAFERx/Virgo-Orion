@@ -5,8 +5,19 @@
 #include "common/random_generator.h"
 #include "common/constants.h"
 #include "frontend/zk_verifier.h"
+
+#ifdef USE_SUPER_ORION
+
+#define ORION_NAMESPACE super_orion
+
+#else
+
+#define ORION_NAMESPACE orion
+
 #include "orion/VPD/linearPC.h"
 #include "orion/linear_code/expanders.h"
+
+#endif
 
 using namespace std;
 using namespace frontend;
@@ -1236,7 +1247,7 @@ bool zk_verifier::verify(const char* output_path)
 	printf("N: %d \n", N);
 	printf("bit_length: %d \n", bit_length);
 
-	orion::expander_init(N / orion::column_size);
+	ORION_NAMESPACE::expander_init(N / ORION_NAMESPACE::column_size);
 
 	auto private_array = new prime_field::field_element[N];
 	auto randomness = new prime_field::field_element[bit_length];
@@ -1246,7 +1257,7 @@ bool zk_verifier::verify(const char* output_path)
 	}
 
 	// for (int i = (1 << C.circuit[0].bit_length); i < N; ++i) {
-	// 	private_array[i] = orion::prime_field::field_element(0);
+	// 	private_array[i] = prime_field::field_element(0);
 	// }
 
 	for (int i = 0; i < C.circuit[0].bit_length; ++i) {
@@ -1254,13 +1265,13 @@ bool zk_verifier::verify(const char* output_path)
 	}
 
 	// for (int i = C.circuit[0].bit_length; i < bit_length; ++i) {
-	// 	randomness[i] = orion::prime_field::field_element(0);
+	// 	randomness[i] = prime_field::field_element(0);
 	// }
 
 	
 
 	std::chrono::high_resolution_clock::time_point orion_commit_t0 = std::chrono::high_resolution_clock::now();
-	auto h = orion::commit(private_array, N);
+	auto h = ORION_NAMESPACE::commit(private_array, N);
 	std::chrono::high_resolution_clock::time_point orion_commit_t1 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> orion_commit_span = std::chrono::duration_cast<std::chrono::duration<double>>(orion_commit_t1 - orion_commit_t0);
 	printf("Orion Commit N: %lld \n", N);
@@ -1268,7 +1279,7 @@ bool zk_verifier::verify(const char* output_path)
 	p -> total_time += orion_commit_span.count();
 
 	std::chrono::high_resolution_clock::time_point orion_verify_t0 = std::chrono::high_resolution_clock::now();
-	auto verificationResult = orion::open_and_verify(randomness, bit_length, N, h);
+	auto verificationResult = ORION_NAMESPACE::open_and_verify(randomness, bit_length, N, h);
 	if (verificationResult.second == false) {
 		std::cerr << "Verification fail, input vpd." << std::endl;
 		return false;

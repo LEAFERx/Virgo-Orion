@@ -5,7 +5,6 @@
 #include "common/prime_field.h"
 #include "frontend/zk_verifier.h"
 #include "frontend/zk_prover.h"
-#include "orion/linear_code/linear_code_encode.h"
 
 frontend::zk_verifier v;
 frontend::zk_prover p;
