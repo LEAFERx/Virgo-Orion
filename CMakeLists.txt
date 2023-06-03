@@ -11,7 +11,7 @@ link_directories(lib lib/orion/lib)
 add_subdirectory(lib/orion)
 
 add_executable(fft_gkr src/VPD/fft_circuit_GKR.cpp src/linear_gkr/prime_field.cpp src/linear_gkr/polynomial.cpp)
-add_executable(zk_proof src/linear_gkr/main_zk.cpp src/infrastructure/utility.cpp src/VPD/fri.cpp src/infrastructure/RS_polynomial.cpp src/infrastructure/merkle_tree.cpp src/VPD/vpd_prover.cpp src/VPD/vpd_verifier.cpp src/linear_gkr/zk_verifier.cpp src/linear_gkr/prime_field.cpp src/linear_gkr/zk_prover.cpp src/linear_gkr/polynomial.cpp src/linear_gkr/main_zk.cpp src/poly_commitment/poly_commit.cpp)
+add_executable(zk_proof src/linear_gkr/main_zk.cpp src/infrastructure/utility.cpp src/infrastructure/RS_polynomial.cpp src/infrastructure/merkle_tree.cpp src/linear_gkr/zk_verifier.cpp src/linear_gkr/prime_field.cpp src/linear_gkr/zk_prover.cpp src/linear_gkr/polynomial.cpp src/linear_gkr/main_zk.cpp)
 
 target_link_libraries(fft_gkr -lgmp)
 set_target_properties(fft_gkr PROPERTIES CXX_STANDARD 17)

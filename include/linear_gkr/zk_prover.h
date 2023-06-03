@@ -8,10 +8,7 @@
 #include <utility>
 #include <vector>
 #include <chrono>
-#include "VPD/vpd_prover.h"
 #include "infrastructure/my_hhash.h"
-#include "VPD/fri.h"
-#include "poly_commitment/poly_commit.h"
 
 class zk_prover
 {

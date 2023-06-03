@@ -3,7 +3,6 @@
 #include "linear_gkr/zk_verifier.h"
 #include "linear_gkr/zk_prover.h"
 #include "linear_gkr/prime_field.h"
-#include "lib/orion/include/VPD/linearPC.h"
 #include "lib/orion/include/linear_gkr/prime_field.h"
 #include "lib/orion/include/linear_code/linear_code_encode.h"
 #include <iostream>

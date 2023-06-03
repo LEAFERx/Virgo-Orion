@@ -6,7 +6,6 @@
 #include "linear_gkr/zk_prover.h"
 #include "linear_gkr/polynomial.h"
 #include <utility>
-#include "poly_commitment/poly_commit.h"
 
 class zk_verifier
 {

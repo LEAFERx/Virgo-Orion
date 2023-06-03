@@ -4,7 +4,6 @@
 #include <vector>
 #include <iostream>
 #include "linear_gkr/random_generator.h"
-#include "VPD/vpd_verifier.h"
 
 #include "lib/orion/include/VPD/linearPC.h"
 #include "lib/orion/include/linear_code/expanders.h"
